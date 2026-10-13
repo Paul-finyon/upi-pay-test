@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pagar con UPI</title>
+<title>Pay with UPI</title>
 <style>
   :root { --bg:#f6f7f9; --fg:#111; --btn:#1a73e8; }
   body { margin:0; padding:24px 16px; font-family:system-ui,sans-serif; background:var(--bg); color:var(--fg); text-align:center; }
@@ -22,22 +22,22 @@
   <p>VPA: <code id="vpa"></code></p>
   <div class="amt" id="amt"></div>
 
-  <a class="btn" id="btn-upi"   href="#">Pagar con UPI (elegir app)</a>
+  <a class="btn" id="btn-upi"   href="#">Pay with UPI (choose app)</a>
   <a class="btn alt" id="btn-gpay"  href="#">Google Pay</a>
   <a class="btn alt" id="btn-phonepe" href="#">PhonePe</a>
   <a class="btn alt" id="btn-paytm" href="#">Paytm</a>
 
-  <p style="margin-top:20px">Si ningún botón abre una app: abrí esta página en Chrome<br>(menú ⋮ → "Abrir en navegador") o copiá el VPA y pagá a mano.</p>
+  <p style="margin-top:20px">If no button opens an app: open this page in Chrome<br>(menu ⋮ → "Open in browser") or copy the VPA and pay manually.</p>
   <div id="log"></div>
 
 <script>
-  // Parámetros editables (o por querystring: ?pa=...&pn=...&am=...&tn=...)
+  // Editable params (or via querystring: ?pa=...&pn=...&am=...&tn=...)
   var q  = new URLSearchParams(location.search);
   var pa = q.get('pa') || 'paytm.s3ohm62@pty';
   var pn = q.get('pn') || 'Paytm';
   var am = q.get('am') || '100.00';
   var tn = q.get('tn') || 'Verified Paytm Account';
-  var tr = q.get('tr') || ('TEST' + Date.now());   // referencia propia para ubicar el pago
+  var tr = q.get('tr') || ('TEST' + Date.now());   // own reference to locate the payment
 
   var params = 'pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn)
              + '&am=' + encodeURIComponent(am) + '&cu=INR'
