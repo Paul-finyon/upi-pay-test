@@ -39,16 +39,18 @@
   var tn = q.get('tn') || 'Verified Paytm Account';
   var tr = q.get('tr') || ('TEST' + Date.now());   // own reference to locate the payment
 
+  // ?am=0 omits amount, ?tr=0 omits reference, ?tn=0 omits note -> link identical to the printed QR
   var params = 'pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn)
-             + '&am=' + encodeURIComponent(am) + '&cu=INR'
-             + '&tn=' + encodeURIComponent(tn) + '&tr=' + encodeURIComponent(tr);
+             + (am !== '0' ? '&am=' + encodeURIComponent(am) + '&cu=INR' : '')
+             + (tn !== '0' ? '&tn=' + encodeURIComponent(tn) : '')
+             + (tr !== '0' ? '&tr=' + encodeURIComponent(tr) : '');
 
   var isAndroid = /Android/i.test(navigator.userAgent);
   var upi    = 'upi://pay?' + params;
   var intent = 'intent://pay?' + params + '#Intent;scheme=upi;end';
 
   document.getElementById('vpa').textContent = pa;
-  document.getElementById('amt').textContent = '₹ ' + am;
+  document.getElementById('amt').textContent = am !== '0' ? '₹ ' + am : 'amount set in app';
   document.getElementById('btn-upi').href     = isAndroid ? intent : upi;
   document.getElementById('btn-gpay').href    = 'tez://upi/pay?' + params;
   document.getElementById('btn-phonepe').href = 'phonepe://pay?' + params;
