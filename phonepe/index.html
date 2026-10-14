@@ -24,8 +24,10 @@
 
   <a class="btn" id="btn-upi"   href="#">Pay with UPI (choose app)</a>
   <a class="btn alt" id="btn-gpay"  href="#">Google Pay</a>
-  <a class="btn alt" id="btn-phonepe" href="#">PhonePe</a>
-  <a class="btn alt" id="btn-paytm" href="#">Paytm</a>
+  <a class="btn alt" id="btn-phonepe" href="#">PhonePe (intent)</a>
+  <a class="btn alt" id="btn-paytm" href="#">Paytm (intent)</a>
+  <a class="btn" id="btn-phonepe-p2p" href="#" style="background:#5f259f">PhonePe (send money)</a>
+  <a class="btn" id="btn-paytm-p2p" href="#" style="background:#00b9f1">Paytm (send money)</a>
 
   <p style="margin-top:20px">If no button opens an app: open this page in Chrome<br>(menu ⋮ → "Open in browser") or copy the VPA and pay manually.</p>
   <div id="log"></div>
@@ -35,9 +37,11 @@
   var q  = new URLSearchParams(location.search);
   var pa = q.get('pa') || 'Q667608845@ybl';
   var pn = q.get('pn') || 'PhonePe';
-  var am = q.get('am') || '100.00';
-  var tn = q.get('tn') || '';
-  var tr = q.get('tr') || ('TEST' + Date.now());   // QR has no tr; own reference to locate the payment
+  // F2 style: unique paise per order (100 -> 99.xx) so the credit is matchable in the statement
+  var am = q.get('am') || (100 - (Math.floor(Math.random()*99)+1)/100).toFixed(2);
+  var ref = 'LP' + Date.now().toString(36).toUpperCase();   // unique per load, goes in tn + tr
+  var tn = q.get('tn') || ref;
+  var tr = q.get('tr') || ref;
 
   var fixed = 'mode=02';   // field from the QR, keep verbatim
 
@@ -58,8 +62,16 @@
   document.getElementById('btn-phonepe').href = 'phonepe://pay?' + params;
   document.getElementById('btn-paytm').href   = 'paytmmp://pay?' + params;
 
+  // F2PAY style: apps' own P2P "send money" screens, not the merchant intent
+  var pp = {contactInfo:{cbsName:pn, vpa:pa, type:'VPA'},
+            sendParams:{note:tn, initialAmount: Math.round(parseFloat(am)*100)},
+            validateDestination:false, withSheetExpanded:true, shouldShowUnsavedBanner:false};
+  document.getElementById('btn-phonepe-p2p').href = 'phonepe://native?data=' + btoa(JSON.stringify(pp)) + '&id=p2pContactChat';
+  document.getElementById('btn-paytm-p2p').href   = 'paytmmp://cash_wallet?pa=' + encodeURIComponent(pa) + '&pn=' + encodeURIComponent(pn)
+      + '&tn=' + encodeURIComponent(tn) + '&am=' + encodeURIComponent(am) + '&cu=INR&featuretype=money_transfer';
+
   document.getElementById('log').textContent =
-    'UA: ' + navigator.userAgent + '\nupi link: ' + upi + '\ntr: ' + tr;
+    'UA: ' + navigator.userAgent + '\nupi link: ' + upi + '\nref: ' + ref;
 </script>
 </body>
 </html>
